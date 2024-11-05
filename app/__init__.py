@@ -1,6 +1,7 @@
 from flask import Flask, g
 from .routes.user_routes import user_bp
 from .routes.clients_routes import clients_bp
+from .routes.products_routes import products_bp
 from pymongo import MongoClient
 from config import MONGO_URI
 
@@ -20,6 +21,7 @@ def create_app():
     # ROUTES REGISTER
     app.register_blueprint(user_bp)
     app.register_blueprint(clients_bp)
+    app.register_blueprint(products_bp)
 
     @app.before_request
     def before_request():
