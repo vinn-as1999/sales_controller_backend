@@ -19,7 +19,7 @@ class Products:
             return {
                 "error": Products.NO_DATA_ERROR
             }
-        
+        # verifica se o produto existe no banco de dados
         existing_product = g.db["products"].find_one({
             "category": data.get("category"), 
             "products": {
@@ -28,17 +28,17 @@ class Products:
                 }
             }
         })
-
+        # se o produto existir, atualiza a quantidade de produtos
         if existing_product:
             g.db["products"].update_one({
                 "category": data.get("category"),
                 "products.name": data.get("product")
                 },
                 {"$inc": {
-                    "products.$.quantity": data.get("quantity")
+                    "products.$.quantity": int(data.get("quantity"))
                 }
             })
-
+        # se não, adiciona um novo produto
         else:
             g.db["products"].update_one({
                 "user_id": data.get("user_id"),
@@ -47,8 +47,8 @@ class Products:
             }, {"$push": {
                 "products": {
                     "name": data.get("product"),
-                    "price": data.get("price"),
-                    "quantity": data.get("quantity")
+                    "price": float(data.get("price")),
+                    "quantity": int(data.get("quantity"))
                 }
             }}, upsert=True)
 
