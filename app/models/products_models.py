@@ -20,12 +20,14 @@ class Products:
             return {
                 "error": Products.NO_DATA_ERROR
             }
+        
+        product = data["product"]
         # verifica se o produto existe no banco de dados
         existing_product = g.db["products"].find_one({
             "category": data.get("category"), 
             "products": {
                 "$elemMatch": {
-                    "name": data.get("product")
+                    "name": product["name"]
                 }
             }
         })
@@ -33,12 +35,16 @@ class Products:
         if existing_product:
             g.db["products"].update_one({
                 "category": data.get("category"),
-                "products.name": data.get("product")
+                "products.name": product["name"]
                 },
                 {"$inc": {
-                    "products.$.quantity": int(data.get("quantity"))
+                    "products.$.quantity": int(product["quantity"])
                 }
             })
+
+            return {
+                    "success": Products.DATA_SUCCESS_MESSAGE
+                }
         # se não, adiciona um novo produto
         else:
             try:
@@ -48,15 +54,16 @@ class Products:
                     "category": data.get("category")
                 }, {"$push": {
                     "products": {
-                        "name": data.get("product"),
-                        "price": float(data.get("price").replace(',', '.')),
-                        "quantity": int(data.get("quantity"))
+                        "name": product["name"],
+                        "price": float(product["price"]),
+                        "quantity": int(product["quantity"])
                     }
                 }}, upsert=True)
 
                 return {
                     "success": Products.DATA_SUCCESS_MESSAGE
                 }
+            
             except Exception as error:
                 return {
                     "message": Products.TRY_EXCEPT_ERROR,
@@ -76,16 +83,37 @@ class Products:
                 "error": Products.NO_DATA_ERROR
             }
         
+        product = data["product"]
+        filt = {
+            "user_id": data.get("user_id"),
+            "username": data.get("username"),
+            "category": data.get("category")
+        }
+
+        if product["deleteOne"]:
+            try:
+                g.db["products"].update_one(
+                    filt,
+                    {
+                        "$inc": {
+                            "products": {"quantity": -int(product["quantity"])}
+                        }
+                    }
+                )
+
+                return {
+                    "success": Products.DATA_SUCCESS_MESSAGE
+                }
+            
+            except Exception as error:
+                pass
+
         try:
             g.db["products"].update_one(
-                {
-                    "user_id": data.get("user_id"),
-                    "username": data.get("username"),
-                    "category": data.get("category")
-                },
+                filt,
                 {
                     "$pull": {
-                        "products": {"name": data.get("product")}
+                        "products": {"name": product["name"]}
                     }
                 }
             )
