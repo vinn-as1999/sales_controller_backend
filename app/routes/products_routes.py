@@ -20,7 +20,6 @@ def get_products():
     return jsonify(result), 200
     
 
-
 @products_bp.route('/api/products', methods=["POST"])
 def insert_products():
     # insert products
@@ -33,11 +32,6 @@ def insert_products():
         return jsonify(result), result.get("status", 400)
     
     return jsonify(result), 201
-
-
-@products_bp.route('/api/products', methods=["PATCH"])
-def update_products():
-    pass
 
 
 @products_bp.route('/api/products', methods=["DELETE"])
