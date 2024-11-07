@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from flask import g
+from flask import g, jsonify
 
 class Products:
     TRY_EXCEPT_ERROR = "Erro ao executar programa"
@@ -9,9 +9,30 @@ class Products:
     DATA_SUCCESS_MESSAGE = "Programa executado com sucesso!"
 
     @staticmethod
-    def get():
-        # get all products
-        pass
+    def get(data):
+        if not data:
+            return {
+                "error": Products.NO_DATA_ERROR
+            }
+        
+        try:
+            products_cursor = g.db["products"].find({"user_id": data})
+            products = list(products_cursor)
+
+            for product in products:
+                product["_id"] = str(product["_id"])
+
+            print(products)
+
+            return {
+                "products": products
+            }
+
+        except Exception as error:
+            return {
+                "error": str(error)
+            }, 500
+
 
     @staticmethod
     def insert(data):
@@ -91,7 +112,7 @@ class Products:
             "products.name": product["name"]
         }
 
-        if product["deleteOne"]:
+        if product["decrement"]:
             try:
                 g.db["products"].update_one(
                     filt,

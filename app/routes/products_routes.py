@@ -8,19 +8,27 @@ NO_DATA_PROVIDED = "Dados não fornecidos"
 @products_bp.route('/api/products', methods=["GET"])
 def get_products():
     # get all products
-    pass
+    data = request.args.get("user_id")
+    print('o data get aqui', data)
+    if not data:
+        return jsonify({"error": NO_DATA_PROVIDED})
+    
+    result = Products.get(data)
+    if "error" in result:
+        return jsonify(result), result.get("status", 400)
+    
+    return jsonify(result), 200
+    
 
 
 @products_bp.route('/api/products', methods=["POST"])
 def insert_products():
     # insert products
     data = request.get_json()
-    print('o data insert aqui ', data)
     if not data:
         return jsonify({"error": "Dados não fornecidos"})
     
     result = Products.insert(data)
-    print('o result aqui ', result)
     if "error" in result:
         return jsonify(result), result.get("status", 400)
     
