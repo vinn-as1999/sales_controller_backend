@@ -87,7 +87,8 @@ class Products:
         filt = {
             "user_id": data.get("user_id"),
             "username": data.get("username"),
-            "category": data.get("category")
+            "category": data.get("category"),
+            "products.name": product["name"]
         }
 
         if product["deleteOne"]:
@@ -96,17 +97,40 @@ class Products:
                     filt,
                     {
                         "$inc": {
-                            "products": {"quantity": -int(product["quantity"])}
+                            "products.$.quantity": -int(product["quantity"])
                         }
                     }
                 )
+
+                updated_product = g.db["products"].find_one(filt, {"products.$": 1})
+
+                print('o updated ', updated_product)
+
+                if updated_product and updated_product["products"][0]["quantity"] <= 0:
+                    print('é menor que zero')
+                    g.db["products"].update_one(
+                        filt,
+                        {
+                            "$pull": {
+                                "products": {"name": product["name"]}
+                            }
+                        }
+                    )
+
+                    return {
+                        "sucess": Products.DATA_SUCCESS_MESSAGE,
+                        "message": f"Produto {product['name']} removido"
+                    }
 
                 return {
                     "success": Products.DATA_SUCCESS_MESSAGE
                 }
             
             except Exception as error:
-                pass
+                print(error)
+                return {
+                    "error": str(error)
+                }
 
         try:
             g.db["products"].update_one(
