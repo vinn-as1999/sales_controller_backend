@@ -95,11 +95,6 @@ class Products:
 
 
     @staticmethod
-    def update():
-        # update products
-        pass
-
-    @staticmethod
     def delete(data):
         if not data.get("user_id") or not data.get("username") or not data.get("category") or not data.get("product"):
             return {
