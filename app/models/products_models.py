@@ -54,7 +54,7 @@ class Products:
         })
         # se o produto existir, atualiza a quantidade de produtos
         if existing_product:
-            g.db["products"].update_one({
+            new_product = g.db["products"].update_one({
                 "category": data.get("category"),
                 "products.name": product["name"]
                 },
@@ -64,12 +64,13 @@ class Products:
             })
 
             return {
-                    "success": Products.DATA_SUCCESS_MESSAGE
+                    "success": Products.DATA_SUCCESS_MESSAGE,
+                    "product": new_product
                 }
         # se não, adiciona um novo produto
         else:
             try:
-                g.db["products"].update_one({
+                new_product = g.db["products"].update_one({
                     "user_id": data.get("user_id"),
                     "username": data.get("username"),
                     "category": data.get("category")
@@ -82,7 +83,8 @@ class Products:
                 }}, upsert=True)
 
                 return {
-                    "success": Products.DATA_SUCCESS_MESSAGE
+                    "success": Products.DATA_SUCCESS_MESSAGE,
+                    "product": new_product
                 }
             
             except Exception as error:
