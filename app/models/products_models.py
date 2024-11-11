@@ -99,6 +99,8 @@ class Products:
                 "error": Products.NO_DATA_ERROR
             }
         
+        print('o data', data)
+        
         product = data["product"]
         filt = {
             "user_id": data.get("user_id"),
@@ -107,64 +109,43 @@ class Products:
             "products.name": product["name"]
         }
 
-        if product["decrement"]:
-            try:
-                g.db["products"].update_one(
-                    filt,
-                    {
-                        "$inc": {
-                            "products.$.quantity": -int(product["quantity"])
-                        }
-                    }
-                )
-
-                updated_product = g.db["products"].find_one(filt, {"products.$": 1})
-
-                print('o updated ', updated_product)
-
-                if updated_product and updated_product["products"][0]["quantity"] <= 0:
-                    print('é menor que zero')
-                    g.db["products"].update_one(
-                        filt,
-                        {
-                            "$pull": {
-                                "products": {"name": product["name"]}
-                            }
-                        }
-                    )
-
-                    return {
-                        "sucess": Products.DATA_SUCCESS_MESSAGE,
-                        "message": f"Produto {product['name']} removido"
-                    }
-
-                return {
-                    "success": Products.DATA_SUCCESS_MESSAGE
-                }
-            
-            except Exception as error:
-                print(error)
-                return {
-                    "error": str(error)
-                }
-
         try:
             g.db["products"].update_one(
                 filt,
                 {
-                    "$pull": {
-                        "products": {"name": product["name"]}
+                    "$inc": {
+                        "products.$.quantity": -int(product["quantity"])
                     }
                 }
             )
 
+            updated_product = g.db["products"].find_one(filt, {"products.$": 1})
+
+            print('o updated ', updated_product)
+
+            if updated_product and updated_product["products"][0]["quantity"] <= 0:
+                print('é menor que zero')
+                g.db["products"].update_one(
+                    filt,
+                    {
+                        "$pull": {
+                            "products": {"name": product["name"]}
+                        }
+                    }
+                )
+
+                return {
+                    "sucess": Products.DATA_SUCCESS_MESSAGE,
+                    "message": f"Produto {product['name']} removido"
+                }
+
             return {
                 "success": Products.DATA_SUCCESS_MESSAGE
             }
-
+        
         except Exception as error:
+            print(error)
             return {
-                "message": Products.TRY_EXCEPT_ERROR,
                 "error": str(error)
             }
         
