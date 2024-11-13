@@ -40,9 +40,7 @@ class Inventory:
                         filt,
                         {
                             "$set": {
-                                f"inventory.{key}": {
-                                    key: value
-                                }
+                                f"inventory.{key}": value
                             }
                         },
                         upsert=True
