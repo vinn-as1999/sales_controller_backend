@@ -11,6 +11,11 @@ class Inventory:
     @staticmethod
     def validation(data):
         if not data.get("user_id") or not data.get("username") or not data.get("inventory"):
+            print([
+                data.get("user_id"),
+                data.get("username"),
+                data.get("inventory")
+            ])
             return { "error": Inventory.NO_DATA_ERROR }
         else:
             return data
@@ -18,6 +23,7 @@ class Inventory:
     @staticmethod
     def insert(data):
         existing_data = Inventory.validation(data)
+        print('o data do insert models', data)
 
         if "error" in existing_data:
             return existing_data, 400
@@ -28,13 +34,13 @@ class Inventory:
         }
 
         try:
-            for key, value in data.get("inventory"):
+            for key, value in data.get("inventory").items():
                 if value is not None:
                     g.db["inventories"].update_one(
                         filt,
                         {
                             "$set": {
-                                "inventory": {
+                                f"inventory.{key}": {
                                     key: value
                                 }
                             }
@@ -42,7 +48,12 @@ class Inventory:
                         upsert=True
                     )
 
+            return {
+                "message": Inventory.SUCESS_MESSAGE
+            }
+
         except Exception as error:
+            print("caiu aqui")
             return {
                 "error": str(error)
             }

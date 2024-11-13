@@ -15,10 +15,12 @@ def get_inventory(user_id):
 def insert_inventory():
     data = request.get_json()
     if not data:
+        print('Erro no insert')
         return jsonify({"error": NO_DATA_ERROR})
     
     response = Inventory.insert(data)
     if "error" in response:
+        print("error no response do insert", response["error"])
         return jsonify(response), response.get("status", 400)
     
     return jsonify(response), 201

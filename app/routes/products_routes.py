@@ -9,7 +9,6 @@ NO_DATA_PROVIDED = "Dados não fornecidos"
 def get_products():
     # get all products
     data = request.args.get("user_id")
-    print('o data get aqui', data)
     if not data:
         return jsonify({"error": NO_DATA_PROVIDED})
     
