@@ -8,6 +8,7 @@ class Inventory:
     NO_DATA_ERROR = 'Dados inexistentes! Preencha os campos'
     SUCESS_MESSAGE = 'Programa executado com sucesso!'
 
+
     @staticmethod
     def validation(data):
         if not data.get("user_id") or not data.get("username") or not data.get("inventory"):
@@ -20,11 +21,30 @@ class Inventory:
         else:
             return data
 
+
+    @staticmethod
+    def get(data):
+        if not data:
+            return { "error": Inventory.NO_DATA_ERROR }
+        
+        try:
+            inv_data = g.db["inventories"].find({"user_id": data})
+            inv_list = list(inv_data)
+            for c in inv_list:
+                c["_id"] = str(c["_id"])
+
+            return inv_list
+        
+        except Exception as error:
+            print('Some error occurred: ', error)
+            return {
+                "error": str(error)
+            }
+
+
     @staticmethod
     def insert(data):
         existing_data = Inventory.validation(data)
-        print('o data do insert models', data)
-
         if "error" in existing_data:
             return existing_data, 400
         
@@ -56,14 +76,12 @@ class Inventory:
                 "error": str(error)
             }
 
+
     @staticmethod
     def update(data):
         existing_data = Inventory.validation(data)
 
-    @staticmethod
-    def delete(data):
-        existing_data = Inventory.validation(data)
 
     @staticmethod
-    def get(data):
+    def delete(data):
         existing_data = Inventory.validation(data)

@@ -9,7 +9,17 @@ SUCESS_MESSAGE = 'Programa executado com sucesso!'
 
 @inventory_bp.route('/api/inventory/<string:user_id>', methods=["GET"])
 def get_inventory(user_id):
-    pass
+    if not user_id:
+        print('Erro no get inventory')
+        return jsonify({"error": NO_DATA_ERROR})
+    
+    response = Inventory.get(user_id)
+    if "error" in response:
+        print("Erro no response do get inventory: ", response["error"])
+        return jsonify(response), response.get("status", 400)
+    
+    return jsonify(response), 200
+
 
 @inventory_bp.route('/api/inventory', methods=["POST"])
 def insert_inventory():
@@ -25,9 +35,11 @@ def insert_inventory():
     
     return jsonify(response), 201
 
+
 @inventory_bp.route('/api/inventory', methods=["PATCH"])
 def update_inventory():
     pass
+
 
 @inventory_bp.route('/api/inventory', methods=["DELETE"])
 def delete_inventory():
