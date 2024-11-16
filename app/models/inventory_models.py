@@ -45,6 +45,7 @@ class Inventory:
     @staticmethod
     def insert(data):
         existing_data = Inventory.validation(data)
+        print('o data do insert', data)
         if "error" in existing_data:
             return existing_data, 400
         
@@ -54,17 +55,37 @@ class Inventory:
         }
 
         try:
+            # Inicializa dicionários para operações de $set e $unset
+            set_data = {}
+            unset_data = {}
+
+            # Itera sobre as categorias do inventário atualizado
             for key, value in data.get("inventory").items():
-                if value is not None:
-                    g.db["inventories"].update_one(
-                        filt,
-                        {
-                            "$set": {
-                                f"inventory.{key.upper()}": value.upper()
-                            }
-                        },
-                        upsert=True
-                    )
+                if value:
+                    # Se a categoria tem conteúdo, prepare para atualizar ($set)
+                    set_data[f"inventory.{key}"] = value
+                else:
+                    # Se a categoria está vazia, prepare para remover ($unset)
+                    unset_data[f"inventory.{key}"] = ""
+
+            # Executa o update com $set se houver dados para atualizar
+            if set_data:
+                g.db["inventories"].update_one(
+                    filt,
+                    {
+                        "$set": set_data
+                    },
+                    upsert=True
+                )
+
+            # Executa o update com $unset se houver dados para remover
+            if unset_data:
+                g.db["inventories"].update_one(
+                    filt,
+                    {
+                        "$unset": unset_data
+                    }
+                )
 
             return {
                 "message": Inventory.SUCESS_MESSAGE
@@ -75,6 +96,7 @@ class Inventory:
             return {
                 "error": str(error)
             }
+
 
 
     @staticmethod
