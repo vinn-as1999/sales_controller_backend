@@ -3,9 +3,18 @@ from ..models.clients_model import Clients
 
 clients_bp = Blueprint('clients', __name__)
 
-@clients_bp.route('/api/clients', methods=['GET'])
-def get_clients():
-    pass
+
+@clients_bp.route('/api/clients/<string:user_id>', methods=['GET'])
+def get_clients(user_id):
+    if not user_id:
+        return jsonify({"error": "Data not provided"}), 400
+    
+    result = Clients.get(user_id)
+    if "error" in result:
+        return jsonify(result), result.get("status", 404)
+
+    return jsonify(result), 200
+
 
 @clients_bp.route('/api/add_clients', methods=['POST'])
 def insert_clients():
@@ -15,6 +24,9 @@ def insert_clients():
     
     try:
         result = Clients.insert(data)
+        if "error" in result:
+            return jsonify(result), result.get("status")
+        
         return jsonify(result), 201
 
     except Exception as error:
