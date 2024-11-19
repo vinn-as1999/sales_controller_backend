@@ -36,11 +36,14 @@ def insert_inventory():
     return jsonify(response), 201
 
 
-@inventory_bp.route('/api/inventory', methods=["PATCH"])
-def update_inventory():
-    pass
-
-
 @inventory_bp.route('/api/inventory', methods=["DELETE"])
 def delete_inventory():
-    pass
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": NO_DATA_ERROR})
+    
+    response = Inventory.delete(data)
+    if "error" in response:
+        return jsonify(response), response.get("status", 400)
+    
+    return jsonify(response), 201

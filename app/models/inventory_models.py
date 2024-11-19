@@ -45,7 +45,6 @@ class Inventory:
     @staticmethod
     def insert(data):
         existing_data = Inventory.validation(data)
-        print('o data do insert', data)
         if "error" in existing_data:
             return existing_data, 400
         
@@ -55,37 +54,17 @@ class Inventory:
         }
 
         try:
-            # Inicializa dicionários para operações de $set e $unset
-            set_data = {}
-            unset_data = {}
-
-            # Itera sobre as categorias do inventário atualizado
             for key, value in data.get("inventory").items():
-                if value:
-                    # Se a categoria tem conteúdo, prepare para atualizar ($set)
-                    set_data[f"inventory.{key}"] = value
-                else:
-                    # Se a categoria está vazia, prepare para remover ($unset)
-                    unset_data[f"inventory.{key}"] = ""
-
-            # Executa o update com $set se houver dados para atualizar
-            if set_data:
-                g.db["inventories"].update_one(
-                    filt,
-                    {
-                        "$set": set_data
-                    },
-                    upsert=True
-                )
-
-            # Executa o update com $unset se houver dados para remover
-            if unset_data:
-                g.db["inventories"].update_one(
-                    filt,
-                    {
-                        "$unset": unset_data
-                    }
-                )
+                if value is not None:
+                    g.db["inventories"].update_one(
+                        filt,
+                        {
+                            "$set": {
+                                f"inventory.{key}": value
+                            }
+                        },
+                        upsert=True
+                    )
 
             return {
                 "message": Inventory.SUCESS_MESSAGE
@@ -98,7 +77,6 @@ class Inventory:
             }
 
 
-
     @staticmethod
     def update(data):
         existing_data = Inventory.validation(data)
@@ -107,3 +85,32 @@ class Inventory:
     @staticmethod
     def delete(data):
         existing_data = Inventory.validation(data)
+        if "error" in existing_data:
+            return existing_data, 400
+
+        filt = {
+            "user_id": data.get("user_id"),
+            "username": data.get("username")
+        }
+
+        category = data.get("inventory")
+
+        try:
+            g.db["inventories"].update_one(
+                filt,
+                {
+                    "$unset": {
+                        f"inventory.{category}": ""
+                    }
+                }
+            )
+
+            return {
+                "message": Inventory.SUCESS_MESSAGE
+            }
+        
+        except Exception as error:
+            return {
+                "error": str(error)
+            }
+
