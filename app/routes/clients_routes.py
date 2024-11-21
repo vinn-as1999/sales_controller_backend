@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from ..models.clients_model import Clients
+from ..models.clients_models import Clients
 
 clients_bp = Blueprint('clients', __name__)
 
@@ -25,12 +25,13 @@ def insert_clients():
     try:
         result = Clients.insert(data)
         if "error" in result:
-            return jsonify(result), result.get("status")
+            return jsonify(result), 400
         
         return jsonify(result), 201
 
     except Exception as error:
         print('Error inserting clients', error)
+        print("o data", data)
         return jsonify({
             "message": "Error trying insert new clients",
             "error": error

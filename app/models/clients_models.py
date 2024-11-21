@@ -21,7 +21,7 @@ class Clients:
         except Exception as error:
             print("trycatch error")
             return {
-                "error", str(error)
+                "error": str(error)
             }
 
     @staticmethod
@@ -50,10 +50,7 @@ class Clients:
             g.db["clients"].insert_one(new_client)
             return {
                 "message": "Cliente inserido com sucesso!",
-                "client": data.get("client"),
-                "contact": data.get("contact"),
-                "address": data.get("address"),
-                "observations": data.get("observations")
+                "client": new_client
             }, 201
     
         except Exception as error:
