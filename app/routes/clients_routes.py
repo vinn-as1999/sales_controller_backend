@@ -31,7 +31,6 @@ def insert_clients():
 
     except Exception as error:
         print('Error inserting clients', error)
-        print("o data", data)
         return jsonify({
             "message": "Error trying insert new clients",
             "error": error

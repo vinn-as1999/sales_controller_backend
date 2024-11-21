@@ -21,6 +21,7 @@ def validation(data):
     status = data.get("status")
 
     if any(not value for value in [user_id, username, client, product, price, quantity, day, hour, status]):
+        print("caiu no validation: ", data)
         return { "error": FALSY_DATA_ERROR }
     
     return data
@@ -33,6 +34,7 @@ def insert_sales():
     if not checked_data:
         return jsonify({"error": NO_DATA_ERROR}), 400
     if "error" in checked_data:
+        print("caiu aqui")
         return jsonify({"error": FALSY_DATA_ERROR}), 400
     
     response = Sales.insert(data)
