@@ -48,6 +48,7 @@ class Clients:
         
         try:
             g.db["clients"].insert_one(new_client)
+            new_client["_id"] = str(new_client["_id"])
             return {
                 "message": "Cliente inserido com sucesso!",
                 "client": new_client

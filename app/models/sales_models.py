@@ -1,9 +1,9 @@
 from flask import g
-from ..routes.sales_routes import validation
 
 class Sales:
     @staticmethod
     def insert(data):
+        from ..routes.sales_routes import validation
         checked_data = validation(data)
         if not checked_data:
             print('Dados errados: ', checked_data)

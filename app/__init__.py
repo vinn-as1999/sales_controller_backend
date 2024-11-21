@@ -3,6 +3,7 @@ from .routes.user_routes import user_bp
 from .routes.clients_routes import clients_bp
 from .routes.products_routes import products_bp
 from .routes.inventory_routes import inventory_bp
+from .routes.sales_routes import sales_bp
 from pymongo import MongoClient
 from config import MONGO_URI
 
@@ -24,6 +25,7 @@ def create_app():
     app.register_blueprint(clients_bp)
     app.register_blueprint(products_bp)
     app.register_blueprint(inventory_bp)
+    app.register_blueprint(sales_bp)
 
     @app.before_request
     def before_request():
