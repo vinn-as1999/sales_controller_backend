@@ -39,11 +39,19 @@ def insert_sales():
     
     response = Sales.insert(data)
     if "error" in response:
-        return jsonify(response), response.get("status")
+        return jsonify(response), 400
     
     return jsonify(response), 201
 
 
 @sales_bp.route('/api/sales/<string:user_id>', methods=['GET'])
 def get_sales(user_id):
-    pass
+    if not user_id:
+        return jsonify({"error": NO_DATA_ERROR}), 400
+    
+    result = Sales.get(user_id)
+    if "error" in result:
+        return jsonify(result), 400
+    
+    return jsonify(result), 200
+    

@@ -14,7 +14,7 @@ def get_products():
     
     result = Products.get(data)
     if "error" in result:
-        return jsonify(result), result.get("status", 400)
+        return jsonify(result), 400
     
     return jsonify(result), 200
     
@@ -41,7 +41,7 @@ def delete_products():
     
     result = Products.delete(data)
     if "error" in result:
-        return jsonify(result), result.get("status", 400)
+        return jsonify(result), 400
     
     return jsonify(result), 200
 
