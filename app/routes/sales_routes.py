@@ -44,6 +44,19 @@ def insert_sales():
     return jsonify(response), 201
 
 
+@sales_bp.route('/api/sales/<string:sale_id>', methods=['DELETE'])
+def delete_sales(sale_id):
+    if not sale_id:
+        return jsonify({"error": NO_DATA_ERROR}), 400
+    
+    result = Sales.delete(sale_id)
+    if "error" in result:
+        return jsonify(result), 404
+    
+    return jsonify(result), 200
+    
+
+
 @sales_bp.route('/api/sales/<string:user_id>', methods=['GET'])
 def get_sales(user_id):
     if not user_id:
