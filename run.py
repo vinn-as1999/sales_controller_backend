@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 
+#env
 load_dotenv()
 app = create_app()
 
