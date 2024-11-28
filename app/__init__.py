@@ -21,6 +21,10 @@ def create_app():
         print("URI usada para conexão: ", MONGO_URI)
 
     # ROUTES REGISTER
+    app.route('/')
+    def hello_world():
+        return 'Hello, world'
+    
     app.register_blueprint(user_bp)
     app.register_blueprint(clients_bp)
     app.register_blueprint(products_bp)
