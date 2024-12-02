@@ -5,14 +5,13 @@ products_bp = Blueprint('product', __name__)
 
 NO_DATA_PROVIDED = "Dados não fornecidos"
 
-@products_bp.route('/api/products', methods=["GET"])
-def get_products():
+@products_bp.route('/api/products/<string:user_id>', methods=["GET"])
+def get_products(user_id):
     # get all products
-    data = request.args.get("user_id")
-    if not data:
+    if not user_id:
         return jsonify({"error": NO_DATA_PROVIDED})
     
-    result = Products.get(data)
+    result = Products.get(user_id)
     if "error" in result:
         return jsonify(result), 400
     
