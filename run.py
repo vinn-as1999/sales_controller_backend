@@ -7,7 +7,7 @@ from flask_cors import CORS
 load_dotenv()
 app = create_app()
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["https://salescontrollerbr.netlify.app", "http://localhost:5173"]}})
 
 
 if __name__ == "__main__":
