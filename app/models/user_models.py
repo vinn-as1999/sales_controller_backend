@@ -67,6 +67,35 @@ class User:
                 "message": "Some error occured",
                 "error": error
             }
+        
+    
+    @staticmethod
+    def set_user_goal(data):
+        try:
+            user_id = ObjectId(data["user_id"]) if isinstance(data["user_id"], str) else data["user_id"]
+            user = g.db["users"].find_one({"_id": user_id})
+            if user:
+                g.db["users"].update_one(
+                    {"_id": user_id},
+                    {"$set": {
+                        "goal": data["goal"]
+                    }}
+                )
+
+                return {
+                    "Success": "Projeção mensal atualizada com sucesso!"
+                }
+            
+            else:
+                return {
+                    "error": "Usuário não encontrado"
+                }
+        
+        except Exception as error:
+            print("Error: ", str(error))
+            return {
+                "error": str(error)
+            }
     
 
     @staticmethod

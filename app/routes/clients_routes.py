@@ -11,7 +11,7 @@ def get_clients(user_id):
     
     result = Clients.get(user_id)
     if "error" in result:
-        return jsonify(result), result.get("status", 404)
+        return jsonify(result), 400
 
     return jsonify(result), 200
 

@@ -9,24 +9,29 @@ class Sales:
         
         try:
             existing_data = g.db["sales"].find({"user_id": user_id})
-            existing_history = g.db["history"].find({"user_id": user_id})
             data_list = list(existing_data)
+
+            existing_history = g.db["history"].find({"user_id": user_id})
             history_list = list(existing_history)
 
             for doc in data_list:
                 doc["_id"] = str(doc["_id"])
+
+            history_obj = {}
             for doc in history_list:
-                doc["_id"] = str(doc["_id"])
+                for date_key, sales in doc.items():
+                    history_obj[date_key] = [{"_id": str(sale["_id"]), **sale} for sale in sales]
 
             return {
                 "message": "Programa executado com sucesso",
                 "sales": data_list,
-                "history": history_list
+                "history": history_obj  # Retorna o histórico como um objeto
             }
 
         except Exception as e:
             print("trycatch error, /salesmodel/get")
             return {"error": str(e)}
+
 
 
     @staticmethod
@@ -63,7 +68,20 @@ class Sales:
             if status == "pending":
                 g.db["sales"].insert_one(sale_obj)
 
-            g.db["history"].insert_one(sale_obj)
+            from datetime import datetime
+            date_key = datetime.now().strftime('%m/%y')
+
+            existing_history = g.db["history"].find_one({date_key: {"$exists": True}})
+
+            if existing_history:
+                g.db["history"].update_one(
+                    {date_key: {"$exists": True}},
+                    {"$push": {date_key: sale_obj}}
+                )
+            else:
+                g.db["history"].insert_one({
+                    date_key: [sale_obj]
+                })
 
             return {
                 "message": "Sale successfully registered"

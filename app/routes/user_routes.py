@@ -41,3 +41,22 @@ def log_user():
             "message": "Error",
             "error": error
         }), 400
+    
+
+@user_bp.route('/api/goal', methods=['POST'])
+def set_user_goal():
+    data = request.get_json()
+    if not data.get("user_id") or not data.get("goal"):
+        return jsonify({"error": "ID ou projeção mensal não fornecidos"})
+    
+    try:
+        result = User.set_user_goal(data)
+        return jsonify(result), 201
+    
+    except Exception as error:
+        return jsonify({
+            "message": "Error",
+            "error": error
+        }), 400
+
+

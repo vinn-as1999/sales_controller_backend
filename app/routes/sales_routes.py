@@ -34,7 +34,6 @@ def insert_sales():
     if not checked_data:
         return jsonify({"error": NO_DATA_ERROR}), 400
     if "error" in checked_data:
-        print("caiu aqui")
         return jsonify({"error": FALSY_DATA_ERROR}), 400
     
     response = Sales.insert(data)
