@@ -32,12 +32,14 @@ def insert_sales():
     data = request.get_json()
     checked_data = validation(data)
     if not checked_data:
+        print('dado não checado')
         return jsonify({"error": NO_DATA_ERROR}), 400
     if "error" in checked_data:
         return jsonify({"error": FALSY_DATA_ERROR}), 400
     
     response = Sales.insert(data)
     if "error" in response:
+        print("erro no response", response["error"])
         return jsonify(response), 400
     
     return jsonify(response), 201
